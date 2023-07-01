@@ -1,0 +1,74 @@
+{
+	"name": "UseFeatureFlag",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get cool-new-feature",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "GetFeatureFlag",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"FeatureFlagName": "cool-new-feature"
+					}
+				}
+			},
+			{
+				"name": "If cool-new-feature Enabled",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get cool-new-feature",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('Get cool-new-feature').output.pipelineReturnValue.Enabled",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Did Not Use cool-new-feature",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "CoolNewFeatureUsed",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Used cool-new-feature",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "CoolNewFeatureUsed",
+								"value": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"CoolNewFeatureUsed": {
+				"type": "Boolean"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-06-26T00:35:57Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}
